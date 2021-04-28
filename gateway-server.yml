@@ -1,47 +1,11 @@
-server:
-  port: 8072
-  
-logstash.host: 3.136.161.26:5000
- 
-logging: 
-  config: classpath:logback-delayed.xml
-  
- 
 eureka:
-  instance:
-    preferIpAddress: true
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://eurekaserver:8070/eureka/
-      
-spring:
-  zipkin:
-    baseUrl: http://zipkin:9411
-  sleuth:
-    sampler:
-      percentage: 1
-  cloud:
-    loadbalancer.ribbon.enabled: false
-    gateway:
-        routes:
-        - id: organization-service
-          uri: lb://organization-service
-          predicates:
-          - Path=/organization/**
-          filters:
-          - RewritePath=/organization/(?<path>.*), /$\{path}
-          - RemoveRequestHeader= Cookie,Set-Cookie
-        - id: licensing-service
-          uri: lb://licensing-service
-          predicates:
-          - Path=/license/**
-          filters:
-          - RewritePath=/license/(?<path>.*), /$\{path}
-          - RemoveRequestHeader= Cookie,Set-Cookie
-
-
+    client:
+        fetchRegistry: true
+        registerWithEureka: true
+        serviceUrl:
+            defaultZone: http://eurekaserver:8070/eureka/
+    instance:
+        preferIpAddress: true
 keycloak:
     auth-server-url: http://localhost:8080/auth
     bearer-only: true
@@ -50,13 +14,31 @@ keycloak:
     realm: spmia-realm
     resource: ostock
     ssl-required: external
-    use-resource-role-mappings: true    
-    
+    use-resource-role-mappings: true
+logging:
+    config: classpath:logback-delayed.xml
+logstash:
+    host: 3.136.161.26:5000
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-        
-        
-        
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+server:
+    port: 8072
+spring:
+    cloud:
+        gateway:
+            routes: '[{id=organization-service, uri=lb://organization-service, predicates=[Path=/organization/**],
+                filters=[RewritePath=/organization/(?<path>.*), /${path}, RemoveRequestHeader=
+                Cookie,Set-Cookie]}, {id=licensing-service, uri=lb://licensing-service,
+                predicates=[Path=/license/**], filters=[RewritePath=/license/(?<path>.*),
+                /${path}, RemoveRequestHeader= Cookie,Set-Cookie]}]'
+        loadbalancer:
+            ribbon:
+                enabled: false
+    sleuth:
+        sampler:
+            percentage: 1
+    zipkin:
+        baseUrl: http://zipkin:9411

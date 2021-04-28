@@ -1,26 +1,31 @@
 spring:
-  application:
-    name: eureka-server
-  boot:
-    admin:
-      context-path: /admin
+    application:
+        name: eureka-server
+    boot:
+        admin:
+            context-path: /admin
 server:
-  port: 8070
+    port: 8070 # Port Eureka Server is going to listen on.
 eureka:
-  instance:
-    hostname: eurekaserver
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-  server:
-    waitTimeInMsWhenSyncEmpty: 5
-      
-      
+    instance:
+        hostname: eurekaserver
+    client:
+        registerWithEureka: false # Don’t register with Eureka service.
+        fetchRegistry: false # Don’t cache registry information locally
+        serviceUrl:
+            defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ # Provides the service URL.
+    server:
+        waitTimeInMsWhenSyncEmpty: 5 # Initial time to wait before server takes requests
+#   When you’re testing your service locally, you should use this line because Eureka won’t
+#   immediately advertise any services that register with it. It will wait five minutes by default
+#   to give all of the services a chance to register with it before advertising them.
+#   Using this line for local testing will help speed up the amount of time it will take
+#   for the Eureka service to start and show services registered with it.
+#  Individual services registering will take up to 30 seconds to show up in the Eureka service
+#  because Eureka requires three consecutive heartbeat pings from the service spaced 10 seconds apart before it will
+#  say the service is ready for use. Keep this in mind as you’re deploying and testing your own services.
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-   
+    endpoints:
+        web:
+            exposure:
+                include: "*"
